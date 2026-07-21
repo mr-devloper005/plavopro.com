@@ -129,7 +129,7 @@ export function TaskDetailView({ task, post, related, comments = [] }: { task: T
   )
 }
 
-// Yelp-style red star rating row. Uses real rating/review fields when present,
+// Rating display uses real rating/review fields when present,
 // otherwise a stable derived value (wire to real data when available).
 const hashStr = (value: string) => {
   let h = 0
@@ -194,16 +194,19 @@ function ArticleDetail({ post, related, comments }: { post: SitePost; related: S
   const images = getImages(post)
   return (
     <>
-      <article className="mx-auto max-w-4xl px-6 py-14 sm:py-20">
-        <BackLink task="article" />
-        <p className="mt-10 text-xs font-medium uppercase tracking-[0.28em] text-[var(--tk-accent)]">{categoryOf(post, 'Article')}</p>
-        <h1 className="editable-display mt-5 text-balance text-4xl font-semibold leading-[1.06] tracking-[-0.03em] sm:text-5xl lg:text-[3.4rem]">{post.title}</h1>
-        <div className="mt-6 text-sm text-[var(--tk-muted)]">
-          <span>{SITE_CONFIG.name}</span>
+      <header className="relative overflow-hidden bg-[#151617] text-[#F3E8DF]">
+        <div className="hairline-grid absolute inset-0 opacity-60" />
+        <div className="relative mx-auto max-w-[var(--editable-container)] px-6 py-16 sm:py-24 lg:px-8">
+          <div className="[&_a]:text-white/60"><BackLink task="article" /></div>
+          <div className="mt-12 grid gap-10 lg:grid-cols-[1.15fr_.85fr] lg:items-end">
+            <div><p className="tech-label text-[10px] text-[#E8D1C5]">Reading file / {categoryOf(post, 'Article')}</p><h1 className="editable-display mt-6 text-balance text-5xl font-normal leading-[.9] tracking-[-0.045em] sm:text-7xl lg:text-8xl">{post.title || 'Untitled entry'}</h1><p className="tech-label mt-8 text-[9px] text-white/40">Published by {SITE_CONFIG.name}</p></div>
+            {images[0] ? <img src={images[0]} alt="" className="aspect-[4/3] w-full border border-white/15 object-cover opacity-90" /> : <div className="flex aspect-[4/3] items-center justify-center border border-white/15 text-white/25"><FileText className="h-12 w-12" /></div>}
+          </div>
         </div>
-        {images[0] ? <img src={images[0]} alt="" className="mt-10 aspect-[16/9] w-full rounded-[var(--tk-radius)] border border-[var(--tk-line)] object-cover" /> : null}
-        <BodyContent post={post} />
-        <EditableArticleComments slug={post.slug} comments={comments} />
+      </header>
+      <article className="mx-auto grid max-w-[var(--editable-container)] gap-10 px-6 py-14 sm:py-20 lg:grid-cols-[220px_minmax(0,760px)] lg:px-8">
+        <aside className="tech-label text-[9px] leading-6 text-[var(--tk-muted)]"><span className="block border-t border-[var(--tk-line)] pt-4">Filed under<br />{categoryOf(post, 'Article')}</span><span className="mt-6 block border-t border-[var(--tk-line)] pt-4">Source<br />{SITE_CONFIG.name}</span></aside>
+        <div className="min-w-0"><BodyContent post={post} /><EditableArticleComments slug={post.slug} comments={comments} /></div>
       </article>
       <RelatedStrip task="article" related={related} />
     </>
@@ -494,7 +497,7 @@ function BadgeLine({ label, value }: { label: string; value: string }) {
   )
 }
 
-function RelatedPanel({ task, post, related }: { task: TaskKey; post: SitePost; related: SitePost[] }) {
+function RelatedPanel({ task, post: _post, related }: { task: TaskKey; post: SitePost; related: SitePost[] }) {
   const taskConfig = getTaskConfig(task)
   return (
     <div className="space-y-6">
